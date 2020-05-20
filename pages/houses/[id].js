@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useStoreActions } from 'easy-peasy'
 import houses from '../houses.json'
 import Layout from '../../components/Layout'
 import Head from 'next/head'
@@ -27,6 +28,7 @@ const House = ({ house }) => {
     reviewsCount,
   } = house
 
+  const setShowLoginModal = useStoreActions(actions => actions.modals.setShowLoginModal)
   const [dateChosen, setDateChosen] = useState(false)  
   const [numberOfNightsBetweenDates, setNumberOfNightsBetweenDates] = useState(0)
   return (
@@ -62,7 +64,11 @@ const House = ({ house }) => {
                 <p>{price}</p>
                 <h2>Total price for booking</h2>
                 <p>{(numberOfNightsBetweenDates * price).toFixed(2)}</p>
-                <button className="reserve">Reserve</button>
+                <button
+                  className="reserve"
+                  type="button"
+                  onClick={() => setShowLoginModal()}
+                >Reserve</button>
               </div>
             )}
           </aside>

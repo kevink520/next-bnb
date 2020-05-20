@@ -1,29 +1,27 @@
 import { useState } from 'react'
+import { useStoreState, useStoreActions } from 'easy-peasy'
 import Header from './Header'
 import Modal from './Modal'
 import LoginModal from './LoginModal'
 import RegistrationModal from './RegistrationModal'
 
 const Layout = ({ content }) => {
-  const [showModal, setShowModal] = useState(true)
-  const [showLoginModal, setShowLoginModal] = useState(true)
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
+  const showModal = useStoreState(state => state.modals.showModal)
+  const setHideModal = useStoreActions(actions => actions.modals.setHideModal)
+  const showLoginModal = useStoreState(state => state.modals.showLoginModal)
+  const setShowLoginModal = useStoreActions(actions => actions.modals.setShowLoginModal)
+  const showRegistrationModal = useStoreState(state => state.modals.showRegistrationModal)
+  const setShowRegistrationModal = useStoreActions(actions => actions.modals.setShowRegistrationModal)
 
   return (
     <div>
       <Header />
       <main>{content}</main>
-      {showModal && <Modal close={() => setShowModal(false)}>
+      {showModal && <Modal close={setHideModal}>
         {showLoginModal &&
-        <LoginModal showSignup={() => {
-          setShowLoginModal(false)
-          setShowRegistrationModal(true)
-        }} />}
+        <LoginModal showSignup={setShowRegistrationModal} />}
         {showRegistrationModal &&
-        <RegistrationModal showLogin={() => {
-          setShowRegistrationModal(false)
-          setShowLoginModal(true)
-        }} />}
+        <RegistrationModal showLogin={setShowLoginModal} />}
       </Modal>}
       <style jsx global>{`
         body {
