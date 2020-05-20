@@ -1,17 +1,17 @@
-import { User } from '../../../../model'
+import { User } from '../../../model'
 
-export default (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).end()
     return
   }
 
-  const { email, password, pssswordconfirmation } = req.body
+  const { email, password, passwordconfirmation } = req.body
   if (password !== passwordconfirmation) {
     res.end(JSON.stringify({
       status: 'error',
       message: 'Passwords do not match'
-    })
+    }))
   }
 
   try {

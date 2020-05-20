@@ -25,15 +25,25 @@ User.init({
     allowNull: false
   },
 }, {
-  sequelize.
+  sequelize,
   modelName: 'user',
   timestamps: false,
   hooks: {
-    beforeCreate: user => {
+    beforeCreate: async user => {
       const saltRounds = 10
-      bcrypt.genSalt(saltRounds, (err, salt) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-          user.password = hash
+      user.password = await new Promise((resolve, reject) => {
+        bcrypt.genSalt(saltRounds, (err, salt) => {
+          if (err) {
+            return reject(err)
+          }
+
+          bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) {
+              return reject(err)
+            }
+
+            resolve(hash)
+          })
         })
       })
     }
