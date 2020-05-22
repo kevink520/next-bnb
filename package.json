@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
+    "dev": "nodemon server.js",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production node server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +15,14 @@
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
+    "connect-session-sequelize": "^6.1.1",
     "date-fns": "^2.13.0",
     "easy-peasy": "^3.3.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "next": "^9.4.1",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "pg": "^8.2.1",
     "react": "^16.13.1",
     "react-day-picker": "^7.4.8",
