@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { useStoreActions } from 'easy-peasy'
+import { useStoreState, useStoreActions } from 'easy-peasy'
+import axios from 'axios'
 
 const Header = () => {
   const setShowLoginModal = useStoreActions(
@@ -8,6 +9,11 @@ const Header = () => {
 
   const setShowRegistrationModal = useStoreActions(
     actions => actions.modals.setShowRegistrationModal
+  )
+  
+  const user = useStoreState(state => state.user.user)
+  const setUser = useStoreActions(
+    actions => actions.user.setUser
   )
 
   return (
@@ -19,24 +25,40 @@ const Header = () => {
       </Link>
       <nav>
         <ul>
-          <li>
-            <a
-              href="#"
-              onClick={e => {
-                e.preventDefault()
-                setShowRegistrationModal()
-              }}
-            >Sign up</a>
-          </li>
-          <li>
-            <a
-              href="#"
-              onClick={e => {
-                e.preventDefault()
-                setShowLoginModal()
-              }}
-            >Log in</a>
-          </li>
+          {user ?
+          <>
+            <li className="username">{user}</li>
+            <li>
+              <a
+                href="#"
+                onClick={async e => {
+                  e.preventDefault()
+                  await axios.post('/api/auth/logout')
+                  setUser(null)
+                }}
+              >Log out</a>
+            </li>
+          </> : 
+          <>
+            <li>
+              <a
+                href="#"
+                onClick={e => {
+                  e.preventDefault()
+                  setShowRegistrationModal()
+                }}
+              >Sign up</a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={e => {
+                  e.preventDefault()
+                  setShowLoginModal()
+                }}
+              >Log in</a>
+            </li>
+          </>}
         </ul>
       </nav>
       <style jsx>{`
@@ -48,6 +70,10 @@ const Header = () => {
         li {
           display: block;
           float: left;
+        }
+
+        .username {
+          padding: 1em 0.5em;
         }
 
         a {

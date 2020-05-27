@@ -55,7 +55,7 @@ User.init({
 
 User.prototype.isPasswordValid = function(password) {
   return new Promise((resolve, reject) => {
-    bcrypt.compare(password, this.promise, (err, res) => {
+    bcrypt.compare(password, this.password, (err, res) => {
       if (err) {
         return reject(err)
       }
