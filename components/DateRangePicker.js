@@ -1,21 +1,25 @@
-import { useState } from 'react'
-import DayPickerInput from 'react-day-picker/DayPickerInput'
-import { DateUtils } from 'react-day-picker'
-import 'react-day-picker/lib/style.css'
-import dateFnsFormat from 'date-fns/format'
-import dateFnsParse from 'date-fns/parse'
+import { useState } from 'react';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import { DateUtils } from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
+import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
 
 const parseDate = (str, format, locale) => {
   const parsed = dateFnsParse(str, format, new Date(), { locale });
-  return DateUtils.isDate(parsed) ? parsed : null
-}
+  return DateUtils.isDate(parsed) ? parsed : null;
+};
 
-const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale })
-const format = 'MMMM dd, yyyy'
+const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+const format = 'MMMM dd, yyyy';
 
-const DateRangePicker = ({ datesChanged }) => {
-  const [startDate, setStartDate] = useState(new Date())
-  const [endDate, setEndDate] = useState(new Date())
+const DateRangePicker = ({
+  datesChanged,
+  bookedDates,
+}) => {
+  const bookedDatesObjects = bookedDates.map(date => new Date(date));
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   return (
     <div className="date-range-picker-container">
       <div>
@@ -28,20 +32,23 @@ const DateRangePicker = ({ datesChanged }) => {
           placeholder={dateFnsFormat(new Date(), format)} 
           dayPickerProps={{
             modifiers: {
-              disabled: {
-                before: new Date()
-              }
-            }
+              disabled: [
+                ...bookedDatesObjects,
+                {
+                  before: new Date(),
+                },
+              ],
+            },
           }}
           onDayChange={day => {
-            setStartDate(day)
-            const newEndDate = new Date(day)
+            setStartDate(day);
+            const newEndDate = new Date(day);
             if (!DateUtils.isDayBefore(day, endDate)) {
-              newEndDate.setDate(newEndDate.getDate() + 1)
-              setEndDate(newEndDate)
+              newEndDate.setDate(newEndDate.getDate() + 1);
+              setEndDate(newEndDate);
             }
 
-            datesChanged(day, newEndDate)
+            datesChanged(day, newEndDate);
           }}
         />
       </div>
@@ -55,14 +62,17 @@ const DateRangePicker = ({ datesChanged }) => {
           placeholder={dateFnsFormat(new Date(), format)}
           dayPickerProps={{
             modifiers: {
-              disabled: {
-                before: startDate ? startDate : new Date()
-              }
-            }
+              disabled: [
+                ...bookedDatesObjects,
+                {
+                  before: startDate ? startDate : new Date(),
+                },
+              ],
+            },
           }}
           onDayChange={day => {
-            setEndDate(day)
-            datesChanged(startDate, day)
+            setEndDate(day);
+            datesChanged(startDate, day);
           }}
         />
       </div>
@@ -89,5 +99,4 @@ const DateRangePicker = ({ datesChanged }) => {
   )
 }
 
-export default DateRangePicker
-
+export default DateRangePicker;

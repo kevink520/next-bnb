@@ -1,5 +1,7 @@
 const express = require('express');
 const next = require('next');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -13,13 +15,23 @@ const bodyParser = require('body-parser')
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-const User = require('./model').User;
+const User = require('./models/user');
+const House = require('./models/house');
+const Review = require('./models/review');
+const Booking = require('./models/booking');
 
-const sequelize = require('./model').sequelize;
+const { Op } = require('sequelize');
+const sequelize = require('./database');
 
 const sessionStore = new SequelizeStore({
   db: sequelize,
 });
+
+User.sync({ alter: true });
+House.sync({ alter: true });
+Review.sync({ alter: true });
+Booking.sync({ alter: true });
+sessionStore.sync({ alter: true });
 
 passport.use(
   new LocalStrategy({
@@ -60,10 +72,15 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
-    server.use(bodyParser.json())
+    server.use(bodyParser.json({
+      verify: (req, res, buf) => {
+        req.rawBody = buf;
+      },
+    }));
+
     server.use(
       session({
-        secret: 'somesupersecretstr10044',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
         true: 'nextbnb',
@@ -170,6 +187,270 @@ passport.deserializeUser(async (email, done) => {
       }));
     });
 
+    server.get('/api/houses', async (req, res) => {
+      try {
+        const result = await House.findAndCountAll();
+        const houses = result.rows.map(house => house.dataValues);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(houses));
+      } catch(error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'An error occurred' }));
+      }
+    });
+
+    server.get('/api/houses/:id', async (req, res) => {
+      try {
+        const { id } = req.params;
+        const house = await House.findByPk(id);
+        if (house) {
+          const reviews = await Review.findAndCountAll({
+            where: {
+              houseId: id,
+            },
+          });
+
+          house.dataValues.reviews = reviews.rows.map(review => review.dataValues);
+          house.dataValues.reviewsCount = reviews.count;
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(house.dataValues));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Not found' }));
+        }
+      } catch(error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'An error occurred' }));
+      }
+    });
+    
+    const canBookThoseDates = async (houseId, startDate, endDate) => {
+      const results = await Booking.findAll({
+        where: { 
+          houseId,
+          startDate: {
+            [Op.lte]: new Date(endDate),
+          },
+          endDate: {
+            [Op.gte]: new Date(startDate),
+          },
+        },
+      });
+
+      return !(results.length > 0);
+    };
+
+    server.post('/api/houses/reserve', async (req, res) => {
+      try {
+        const {
+          houseId,
+          startDate,
+          endDate,
+          sessionId,
+        } = req.body;
+
+        if (!req.session.passport) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        if (!await canBookThoseDates(houseId, startDate, endDate)) {
+          res.status(500)
+            .json({
+              status: 'error',
+              message: 'House is already booked',
+            });
+
+          return;
+        }
+
+        const userEmail = req.session.passport.user;
+        const user = await User.findOne({
+          where: { email: userEmail },
+        });
+
+        if (!user) {
+          throw new Error();
+        }
+
+        await Booking.create({
+          houseId,
+          userId: user.id,
+          startDate,
+          endDate,
+          sessionId,
+        });
+
+        res.json({
+          status: 'success',
+          message: 'ok',
+        });
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.string({ message: 'An error occurred' }));
+      }
+    });
+
+    server.post('/api/houses/check', async (req, res) => {
+      try {
+        const {
+          houseId,
+          startDate,
+          endDate,
+        } = req.body;
+
+        let message = 'free';
+        if (!await canBookThoseDates(houseId, startDate, endDate)) {
+          message = 'busy';
+        }
+
+        res.json({
+          status: 'success',
+          message,
+        });
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
+    const getDatesBetweenDates = (startDate, endDate) => {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      let dates = [];
+      while (start < end) {
+        dates = [...dates, new Date(start)];
+        start.setDate(start.getDate() + 1);
+      }
+    
+      dates = [...dates, end];
+      return dates;
+    };
+
+    server.post('/api/houses/booked', async (req, res) => {
+      try {
+        const { houseId } = req.body;
+        if (!houseId) {
+          throw new Error();
+        }
+
+        const results = await Booking.findAll({
+          where: {
+            houseId,
+            endDate: {
+              [Op.gte]: new Date(),
+            },
+          },
+        });
+
+        let bookedDates = [];
+        for (result of results) {
+          const { startDate, endDate } = result.dataValues;
+          const dates = getDatesBetweenDates(startDate, endDate);
+          bookedDates = [...bookedDates, ...dates];
+        }
+
+        bookedDates = [...new Set(bookedDates)];
+        res.json({
+          status: 'success',
+          message: 'ok',
+          bookedDates,
+        });
+      } catch(error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+            error,
+          });
+      }
+    });
+
+    server.post('/api/stripe/session', async (req, res) => {
+      try {
+        const { amount } = req.body;
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [{
+            name: 'Booking house on NextBnB',
+            amount: amount * 100,
+            currency: 'usd',
+            quantity: 1,
+          }],
+          success_url: `${process.env.BASE_URL}/bookings`,
+          cancel_url: `${process.env.BASE_URL}/bookings`,
+        });
+
+        res.json({
+          status: 'success',
+          sessionId: session.id,
+          stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+        });
+      } catch (error) {
+        console.log(error)
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
+    server.post('/api/stripe/webhook', async (req, res) => {
+      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      const sig = req.headers['stripe-signature'];
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+      } catch (error) {
+        console.log(error.message);
+        res.status(400)
+          .json({
+            status: 'success',
+            message: `Webhook Error: ${error.message}`,
+          });
+
+        return;
+      }
+
+      if (event.type === 'checkout.session.completed') {
+        const sessionId = event.data.object.id;
+        try {
+          await Booking.update({ paid: true }, { where: { sessionId } });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      res.json({ received: true });
+    });
+
+    server.post('/api/bookings/clean', async (req, res) => {
+      try {
+        await Booking.destroy({ where: { paid: false } });
+        res.json({
+          status: 'success',
+          message: 'ok',
+        });
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
     server.all('*', (req, res) => handle(req, res));
     server.listen(port, err => {
       if (err) {
@@ -183,5 +464,3 @@ passport.deserializeUser(async (email, done) => {
     process.exit(1);
   } 
 })();
-
-//sessionStore.sync();

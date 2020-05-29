@@ -1,17 +1,16 @@
-import { useState } from 'react'
-import { useStoreState, useStoreActions } from 'easy-peasy'
-import Header from './Header'
-import Modal from './Modal'
-import LoginModal from './LoginModal'
-import RegistrationModal from './RegistrationModal'
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import Header from './Header';
+import Modal from './Modal';
+import LoginModal from './LoginModal';
+import RegistrationModal from './RegistrationModal';
 
 const Layout = ({ content }) => {
-  const showModal = useStoreState(state => state.modals.showModal)
-  const setHideModal = useStoreActions(actions => actions.modals.setHideModal)
-  const showLoginModal = useStoreState(state => state.modals.showLoginModal)
-  const setShowLoginModal = useStoreActions(actions => actions.modals.setShowLoginModal)
-  const showRegistrationModal = useStoreState(state => state.modals.showRegistrationModal)
-  const setShowRegistrationModal = useStoreActions(actions => actions.modals.setShowRegistrationModal)
+  const showModal = useStoreState(state => state.modals.showModal);
+  const setHideModal = useStoreActions(actions => actions.modals.setHideModal);
+  const showLoginModal = useStoreState(state => state.modals.showLoginModal);
+  const setShowLoginModal = useStoreActions(actions => actions.modals.setShowLoginModal);
+  const showRegistrationModal = useStoreState(state => state.modals.showRegistrationModal);
+  const setShowRegistrationModal = useStoreActions(actions => actions.modals.setShowRegistrationModal);
 
   return (
     <div>
@@ -70,8 +69,7 @@ const Layout = ({ content }) => {
         }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
-
+export default Layout;
