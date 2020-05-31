@@ -29,6 +29,11 @@ const Header = () => {
           <>
             <li className="username">{user}</li>
             <li>
+              <Link href="/bookings">
+                <a>Bookings</a>
+              </Link>
+            </li>
+            <li>
               <a
                 href="#"
                 onClick={async e => {

@@ -451,6 +451,48 @@ passport.deserializeUser(async (email, done) => {
       }
     });
 
+    server.get('/api/bookings/list', async (req, res) => {
+      try {
+        if (!req.session.passport || !req.session.passport.user) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        const email = req.session.passport.user;
+        const user = await User.findOne({ where: { email } });
+        const result = await Booking.findAndCountAll({
+          where: {
+            paid: true,
+            userId: user.id,
+            endDate: {
+              [Op.gte]: new Date(),
+            },
+          },
+          order: [['startDate', 'ASC']],
+        });
+
+        const bookings = await Promise.all(result.rows.map(async booking => {
+          const data = {};
+          data.booking = booking.dataValues;
+          data.house = (await House.findByPk(data.booking.houseId)).dataValues;
+          return data;
+        }));
+
+        res.json(bookings);
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
     server.all('*', (req, res) => handle(req, res));
     server.listen(port, err => {
       if (err) {

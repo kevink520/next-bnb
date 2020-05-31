@@ -4,7 +4,7 @@ import Modal from './Modal';
 import LoginModal from './LoginModal';
 import RegistrationModal from './RegistrationModal';
 
-const Layout = ({ content }) => {
+const Layout = ({ children }) => {
   const showModal = useStoreState(state => state.modals.showModal);
   const setHideModal = useStoreActions(actions => actions.modals.setHideModal);
   const showLoginModal = useStoreState(state => state.modals.showLoginModal);
@@ -15,7 +15,7 @@ const Layout = ({ content }) => {
   return (
     <div>
       <Header />
-      <main>{content}</main>
+      <main>{children}</main>
       {showModal && <Modal close={setHideModal}>
         {showLoginModal &&
         <LoginModal showSignup={setShowRegistrationModal} />}

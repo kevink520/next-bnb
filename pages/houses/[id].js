@@ -78,118 +78,116 @@ const House = ({
   const [endDate, setEndDate] = useState();
 
   return (
-    <Layout
-      content={(
-        <div className='container'>
-          <Head>
-            <title>{title}</title>
-          </Head>
-          <article>
-            <img src={picture} width='100%' alt='House picture' />
-            <p>
-              {type} - {town}
-            </p>
-            <p>{title}</p>
-            {reviewsCount > 0 && (
-              <div className='reviews'>
-                <h3>{reviewsCount} Review{reviewsCount > 1 ? 's' : ''}</h3>
-                {reviews.map((review, id) => (
-                  <div key={id}>
-                    <p>{new Date(review.createdAt).toDateString()}</p>
-                    <p>{review.comment}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </article>          
-          <aside>
-            <h2>Add dates for prices</h2>
-            <DateRangePicker
-              datesChanged={(startDate, endDate) => {
-                setNumberOfNightsBetweenDates(
-                  calcNumberOfNightsBetweenDates(startDate, endDate)
-                );
+    <Layout>
+      <div className='container'>
+        <Head>
+          <title>{title}</title>
+        </Head>
+        <article>
+          <img src={picture} width='100%' alt='House picture' />
+          <p>
+            {type} - {town}
+          </p>
+          <p>{title}</p>
+          {reviewsCount > 0 && (
+            <div className='reviews'>
+              <h3>{reviewsCount} Review{reviewsCount > 1 ? 's' : ''}</h3>
+              {reviews.map((review, id) => (
+                <div key={id}>
+                  <p>{new Date(review.createdAt).toDateString()}</p>
+                  <p>{review.comment}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>          
+        <aside>
+          <h2>Add dates for prices</h2>
+          <DateRangePicker
+            datesChanged={(startDate, endDate) => {
+              setNumberOfNightsBetweenDates(
+                calcNumberOfNightsBetweenDates(startDate, endDate)
+              );
 
-                setDateChosen(true);
-                setStartDate(startDate);
-                setEndDate(endDate);
-              }}
-              bookedDates={bookedDatesState}
-            />
-            {dateChosen && (
-              <div>
-                <h2>Price per night</h2>
-                <p>{price}</p>
-                <h2>Total price for booking</h2>
-                <p>{(numberOfNightsBetweenDates * price).toFixed(2)}</p>
-                {user ? (
-                  <button
-                    className='reserve'
-                    type='button'
-                    onClick={async () => {
-                      try {
-                        if (!await canReserve(id, startDate, endDate)) {
-                          alert('The dates chosen are not valid');
-                          return;
-                        }
-                        
-                        const sessionResponse = await axios.post('/api/stripe/session', {
-                          amount: price * numberOfNightsBetweenDates,
-                        });
-
-                        if (sessionResponse.data.status === 'error') {
-                          alert(sessionResponse.data.message);
-                          return;
-                        }
-
-                        const { sessionId, stripePublicKey } = sessionResponse.data;
-                        const response = await axios.post('/api/houses/reserve', {
-                          houseId: id,
-                          startDate,
-                          endDate,
-                          sessionId,
-                        });
-
-                        if (response.data.status === 'error') {
-                          alert(response.data.message);
-                          return;
-                        }
-
-                        console.log(response.data);
-                        const stripe = await loadStripe(stripePublicKey);
-                        const { error } = await stripe.redirectToCheckout({ sessionId });
-                        const newBookedDates = await getBookedDates(id);
-                        setBookedDatesState(newBookedDates);
-                      } catch(error) {
-                        console.log(error);
+              setDateChosen(true);
+              setStartDate(startDate);
+              setEndDate(endDate);
+            }}
+            bookedDates={bookedDatesState}
+          />
+          {dateChosen && (
+            <div>
+              <h2>Price per night</h2>
+              <p>{price}</p>
+              <h2>Total price for booking</h2>
+              <p>{(numberOfNightsBetweenDates * price).toFixed(2)}</p>
+              {user ? (
+                <button
+                  className='reserve'
+                  type='button'
+                  onClick={async () => {
+                    try {
+                      if (!await canReserve(id, startDate, endDate)) {
+                        alert('The dates chosen are not valid');
+                        return;
                       }
-                    }}
-                  >Reserve</button>
-                ) : (
-                  <button
-                    className='login'
-                    type='button'
-                    onClick={() => setShowLoginModal()}
-                  >Log in</button>
-                )}
-              </div>
-            )}
-          </aside>
-          <style jsx>{`
-            .container {
-              display: grid;
-              grid-template-columns: 60% 40%;
-              grid-gap: 30px;
-            }
+                      
+                      const sessionResponse = await axios.post('/api/stripe/session', {
+                        amount: price * numberOfNightsBetweenDates,
+                      });
 
-            aside {
-              border: 1px solid #ccc;
-              padding: 20px;
-            }
-          `}</style>
-        </div>
-      )}
-    />
+                      if (sessionResponse.data.status === 'error') {
+                        alert(sessionResponse.data.message);
+                        return;
+                      }
+
+                      const { sessionId, stripePublicKey } = sessionResponse.data;
+                      const response = await axios.post('/api/houses/reserve', {
+                        houseId: id,
+                        startDate,
+                        endDate,
+                        sessionId,
+                      });
+
+                      if (response.data.status === 'error') {
+                        alert(response.data.message);
+                        return;
+                      }
+
+                      console.log(response.data);
+                      const stripe = await loadStripe(stripePublicKey);
+                      const { error } = await stripe.redirectToCheckout({ sessionId });
+                      const newBookedDates = await getBookedDates(id);
+                      setBookedDatesState(newBookedDates);
+                    } catch(error) {
+                      console.log(error);
+                    }
+                  }}
+                >Reserve</button>
+              ) : (
+                <button
+                  className='login'
+                  type='button'
+                  onClick={() => setShowLoginModal()}
+                >Log in</button>
+              )}
+            </div>
+          )}
+        </aside>
+        <style jsx>{`
+          .container {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            grid-gap: 30px;
+          }
+
+          aside {
+            border: 1px solid #ccc;
+            padding: 20px;
+          }
+        `}</style>
+      </div>
+    </Layout>
   );
 };
 
