@@ -10,7 +10,9 @@ const handle = nextApp.getRequestHandler();
 
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const fileupload = require('express-fileupload');
+const sanitizeHtml = require('sanitize-html');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -91,7 +93,8 @@ passport.deserializeUser(async (email, done) => {
         store: sessionStore,
       }),
       passport.initialize(),
-      passport.session()
+      passport.session(),
+      fileupload()
     );
   
     server.post('/api/auth/register', async (req, res) => {
@@ -484,6 +487,146 @@ passport.deserializeUser(async (email, done) => {
         }));
 
         res.json(bookings);
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
+    server.get('/api/host/list', async (req, res) => {
+      try {
+        if (!req.session.passport || !req.session.passport.user) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        const email = req.session.passport.user;
+        const user = await User.findOne({ where: { email } });
+        const houses = await House.findAll({ where: { host: user.id } });
+        houseIds = houses.map(house => house.id);
+        const bookingsData = await Booking.findAll({
+          where: {
+            paid: true,
+            houseId: {
+              [Op.in]: houseIds,
+            },
+            endDate: {
+              [Op.gte]: new Date(),
+            },
+          },
+          order: [['startDate', 'ASC']],
+        });
+
+        const bookings = bookingsData.map(booking => ({
+          booking: booking.dataValues,
+          house: houses.filter(house => house.id === booking.dataValues.houseId)[0].dataValues,
+        }));
+
+        res.json({
+          bookings,
+          houses,
+        });
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
+    server.post('/api/host/new', async (req, res) => {
+      try {
+        const houseData = req.body.house;
+        if (!req.session.passport || !req.session.passport.user) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        const email = req.session.passport.user;
+        const user = await User.findOne({ where: { email }});
+        houseData.host = user.id;
+        houseData.description = sanitizeHtml(houseData.description, {
+          allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br'],
+        });
+
+        await House.create(houseData);
+        res.json({
+          status: 'success',
+          message: 'ok',
+        });
+      } catch (error) {
+        res.status(500)
+          .json({
+            status: 'error',
+            message: 'An error occurred',
+          });
+      }
+    });
+
+    server.post('/api/host/edit', async (req, res) => {
+      try {
+        const houseData = req.body.house;
+        if (!req.session.passport || !req.session.passport.user) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        const email = req.session.passport.user;
+        const user = await User.findOne({ where: { email } });
+        const house = await House.findByPk(houseData.id);
+        if (!house) {
+          res.status(404)
+            .json({
+              status: 'error',
+              message: 'Not found',
+            });
+
+          return;
+        }
+        
+        if (house.host !== user.id) {
+          res.status(403)
+            .json({
+              status: 'error',
+              message: 'Unauthorized',
+            });
+
+          return;
+        }
+
+        houseData.description = sanitizeHtml(houseData.description, {
+          allowedTags: ['b', 'i', 'em', 'strong', 'p', 'br'],
+        });
+
+        await House.update(houseData, {
+          where: {
+            id: houseData.id,
+          },
+        });
+
+        res.json({
+          status: 'success',
+          message: 'ok',
+        });
       } catch (error) {
         res.status(500)
           .json({

@@ -35,7 +35,8 @@ House.init({
   },
   superhost: {
     type: Sequelize.DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: false,
   },
   description: {
     type: Sequelize.DataTypes.TEXT,

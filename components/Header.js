@@ -1,26 +1,26 @@
-import Link from 'next/link'
-import { useStoreState, useStoreActions } from 'easy-peasy'
-import axios from 'axios'
+import Link from 'next/link';
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import axios from 'axios';
 
 const Header = () => {
   const setShowLoginModal = useStoreActions(
     actions => actions.modals.setShowLoginModal
-  )
+  );
 
   const setShowRegistrationModal = useStoreActions(
     actions => actions.modals.setShowRegistrationModal
-  )
+  );
   
-  const user = useStoreState(state => state.user.user)
+  const user = useStoreState(state => state.user.user);
   const setUser = useStoreActions(
     actions => actions.user.setUser
-  )
+  );
 
   return (
     <div className='nav-container'>
       <Link href='/'>
-        <a>
-          <img src='/img/logo.png' alt='' />
+        <a className="brand">
+          <img src='/img/logo.png' alt='' /> nextbnb
         </a>
       </Link>
       <nav>
@@ -34,12 +34,22 @@ const Header = () => {
               </Link>
             </li>
             <li>
+              <Link href="/host">
+                <a>Your Houses</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/host/new">
+                <a>Add House</a>
+              </Link>
+            </li>
+            <li>
               <a
                 href="#"
                 onClick={async e => {
-                  e.preventDefault()
-                  await axios.post('/api/auth/logout')
-                  setUser(null)
+                  e.preventDefault();
+                  await axios.post('/api/auth/logout');
+                  setUser(null);
                 }}
               >Log out</a>
             </li>
@@ -49,8 +59,8 @@ const Header = () => {
               <a
                 href="#"
                 onClick={e => {
-                  e.preventDefault()
-                  setShowRegistrationModal()
+                  e.preventDefault();
+                  setShowRegistrationModal();
                 }}
               >Sign up</a>
             </li>
@@ -58,8 +68,8 @@ const Header = () => {
               <a
                 href="#"
                 onClick={e => {
-                  e.preventDefault()
-                  setShowLoginModal()
+                  e.preventDefault();
+                  setShowLoginModal();
                 }}
               >Log in</a>
             </li>
@@ -67,6 +77,13 @@ const Header = () => {
         </ul>
       </nav>
       <style jsx>{`
+        .brand {
+          display: flex;
+          align-items: center;
+          font-size: 18px;
+          font-weight: 700;
+        }
+
         ul {
           margin: 0;
           padding: 0;
@@ -79,6 +96,7 @@ const Header = () => {
 
         .username {
           padding: 1em 0.5em;
+          margin-right: 15px;
         }
 
         a {
@@ -93,8 +111,13 @@ const Header = () => {
         }
 
         .nav-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           border-bottom: 1px solid #eee;
           height: 50px;
+          margin-left: 40px;
+          margin-right: 27px;
         }
 
         img {
@@ -107,7 +130,6 @@ const Header = () => {
       `}</style>
     </div>
   )
-}
+};
 
-export default Header
-
+export default Header;

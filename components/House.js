@@ -16,9 +16,6 @@ const House = ({
         {type} - {town}
       </p>
       <p>{title}</p>
-      <p>
-        {rating} ({reviewsCount})
-      </p>
     </a>
   </Link>
 )
