@@ -636,6 +636,20 @@ passport.deserializeUser(async (email, done) => {
       }
     });
 
+    server.post('/api/host/image', async (req, res) => {
+      if (!req.session.passport) {
+        res.status(403)
+          .json({
+            status: 'error',
+            message: 'Unauthorized',
+          });
+
+        return;
+      }
+
+      const image = req.files.image;
+    });
+
     server.all('*', (req, res) => handle(req, res));
     server.listen(port, err => {
       if (err) {
