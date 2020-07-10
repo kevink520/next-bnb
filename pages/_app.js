@@ -15,14 +15,14 @@ const MyApp = ({ Component, pageProps, user }) => {
 }
 
 MyApp.getInitialProps = async appContext => {
-  const appProps = {};// await App.getInitialProps(appContext)
+  const appProps = await App.getInitialProps(appContext)
   let user = null
-/*  if (appContext.ctx.req &&
+  if (appContext.ctx.req &&
     appContext.ctx.req.session &&
     appContext.ctx.req.session.passport &&
     appContext.ctx.req.session.passport.user) {
       user = appContext.ctx.req.session.passport.user
-  }*/ 
+  } 
   
   return { ...appProps, user }
 }
