@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Router from 'next/router';
 import axios from 'axios';
+import absoluteUrl from 'next-absolute-url';
 import Editor from 'react-pell';
 
 const HouseForm = props => {
@@ -65,8 +66,9 @@ const HouseForm = props => {
                 const formData = new FormData();
                 formData.append('image', files[0]);
                 try {
+	          const { origin } = absoluteUrl(props.req, 'localhost:3000');
 		  const response = await axios.post('/api/host/image', formData);
-                  setPicture(`http://localhost:3000${response.data.path}`);
+                  setPicture(`${origin}${response.data.path}`);
                 } catch (error) {
                   console.log(error);
 	          alert(JSON.stringify(error));

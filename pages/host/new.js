@@ -5,15 +5,19 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import HouseForm from '../../components/HouseForm';
 
-const NewHouse = () => (
+const NewHouse = ({ req }) => (
   <Layout>
     <>
       <Head>
         <title>Add a new house</title>
       </Head>
-      <HouseForm />
+      <HouseForm req={req} />
     </>
   </Layout>
 );
+
+NewHouse.getInitialProps = ({ req }) => {
+  return { req };
+};
 
 export default NewHouse;

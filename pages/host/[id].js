@@ -1,9 +1,10 @@
 import axios from 'axios';
+import absoluteUrl from 'next-absolute-url';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
 import HouseForm from '../../components/HouseForm';
 
-const EditHouse = ({ house }) => (
+const EditHouse = ({ house, req }) => (
   <Layout>
     <>
       <Head>
@@ -11,17 +12,22 @@ const EditHouse = ({ house }) => (
       </Head>
       <HouseForm
         house={house}
-        edit
+        req={req}
+	edit
       />
     </>
   </Layout>
 );
 
-EditHouse.getInitialProps = async ({ query }) => {
+EditHouse.getInitialProps = async ({ req, query }) => {
   try {
+    const { origin } = absoluteUrl(req, 'localhost:3000');
     const { id } = query;
-    const response = await axios.get(`http://localhost:3000/api/houses/${id}`);
-    return { house: response.data };
+    const response = await axios.get(`${origin}/api/houses/${id}`);
+    return {
+      house: response.data,
+      req,
+    };
   } catch (error) {
     console.log(error);
   }

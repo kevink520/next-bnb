@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import fetch from 'isomorphic-unfetch';
 import axios from 'axios';
+import absoluteUrl from 'next-absolute-url';
 import { loadStripe } from '@stripe/stripe-js';
 import Layout from '../../components/Layout';
 import Head from 'next/head';
@@ -191,10 +192,11 @@ const House = ({
   );
 };
 
-House.getInitialProps = async ({ query }) => {
+House.getInitialProps = async ({ req, query }) => {
   try {
+    const { origin } = absoluteUrl(req, 'localhost:3000');
     const { id } = query;
-    const res = await fetch(`http://localhost:3000/api/houses/${id}`);
+    const res = await fetch(`${origin}/api/houses/${id}`);
     const house = await res.json();
     const bookedDates = await getBookedDates(id);
     return {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import absoluteUrl from 'next-absolute-url';
 import Head from 'next/head';
 import Link from 'next/link';
 
@@ -78,12 +79,13 @@ const Host = ({ houses, bookings }) => (
   </Layout>
 );
 
-Host.getInitialProps = async ctx => {
+Host.getInitialProps = async ({ req }) => {
   try {
+    const { origin } = absoluteUrl(req, 'localhost:3000');
     const response = await axios({
       method: 'get',
-      url: 'http://localhost:3000/api/host/list',
-      headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
+      url: `${origin}/api/host/list`,
+      headers: req ? { cookie: req.headers.cookie } : undefined,
     });
 
     return {

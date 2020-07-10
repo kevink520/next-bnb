@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-unfetch';
+import absoluteUrl from 'next-absolute-url';
 import Layout from '../components/Layout';
 import House from '../components/House';
 
@@ -25,9 +26,10 @@ const Index = ({ houses }) => {
   );
 };
 
-Index.getInitialProps = async () => {
+Index.getInitialProps = async ({ req }) => {
   try {
-    const res = await fetch('http://localhost:3000/api/houses');
+    const { origin } = absoluteUrl(req, 'localhost:3000');
+    const res = await fetch(`${origin}/api/houses`);
     const houses = await res.json();
     return { houses };
   } catch(error) {
