@@ -65,7 +65,6 @@ const HouseForm = props => {
                 const formData = new FormData();
                 formData.append('image', files[0]);
                 try {
-	          const { origin } = absoluteUrl(props.req, 'localhost:3000');
 		  const response = await axios.post('/api/host/image', formData);
                   setPicture(response.data.imageUrl);
                 } catch (error) {

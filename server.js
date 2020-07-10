@@ -83,12 +83,6 @@ passport.deserializeUser(async (email, done) => {
       next();
     });
 
-    server.use(bodyParser.json(/*{
-      verify: (req, res, buf) => {
-        req.rawBody = buf;
-      },
-    }*/));
-
     server.use(
       session({
         secret: process.env.SESSION_SECRET,
