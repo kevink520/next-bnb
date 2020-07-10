@@ -76,6 +76,7 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
+    server.use(uploadImage.single('image'));
     server.use((req, res, next) => {
       console.log('req in middleware', req)
       next();
@@ -101,7 +102,7 @@ passport.deserializeUser(async (email, done) => {
       }),
       passport.initialize(),
       passport.session(),
-      imageUpload.single('image')
+     // imageUpload.single('image')
     );
   
     server.post('/api/auth/register', async (req, res) => {
