@@ -96,7 +96,7 @@ passport.deserializeUser(async (email, done) => {
       }),
       passport.initialize(),
       passport.session(),
-      imageUpload.single('image')
+      //imageUpload.single('image')
     );
   
     server.post('/api/auth/register', async (req, res) => {
@@ -638,7 +638,7 @@ passport.deserializeUser(async (email, done) => {
       }
     });
 
-    server.post('/api/host/image', async (req, res) => {
+    server.post('/api/host/image', imageUpload.single('image'),  async (req, res) => {
       if (!req.session.passport) {
         res.status(403)
           .json({
