@@ -37,3 +37,5 @@ const imageUpload = multer({
   fileFilter,
 });
 
+exports.imageUpload = imageUpload;
+

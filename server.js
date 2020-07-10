@@ -96,7 +96,7 @@ passport.deserializeUser(async (email, done) => {
       }),
       passport.initialize(),
       passport.session(),
-      fileupload()
+      imageUpload.single('image')
     );
   
     server.post('/api/auth/register', async (req, res) => {
@@ -654,7 +654,6 @@ passport.deserializeUser(async (email, done) => {
           status: 'success',
           imageUrl: req.file.location,
         });
-      });
     });
 
     server.all('*', (req, res) => handle(req, res));
