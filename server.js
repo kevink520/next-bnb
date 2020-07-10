@@ -639,6 +639,7 @@ passport.deserializeUser(async (email, done) => {
     });
 
     server.post('/api/host/image',  async (req, res) => {
+      console.log('req in image route', req)
       if (!req.session.passport) {
         res.status(403)
           .json({
