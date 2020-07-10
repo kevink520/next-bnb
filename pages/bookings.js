@@ -56,7 +56,7 @@ const Bookings = ({ bookings }) => (
 );
 
 Bookings.getInitialProps = async ({ req }) => {
-  const { origin } = abssoluteUrl(req, 'localhost:3000');
+  const { origin } = absoluteUrl(req, 'localhost:3000');
   const response = await axios({
     method: 'get',
     url: `${origin}/api/bookings/list`,
