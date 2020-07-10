@@ -82,6 +82,11 @@ passport.deserializeUser(async (email, done) => {
       },
     }));
 
+    server.use((req, res, next) => {
+      console.log('req in middleware', req)
+      next();
+    });
+
     server.use(
       session({
         secret: process.env.SESSION_SECRET,
