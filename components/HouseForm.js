@@ -64,7 +64,8 @@ const HouseForm = props => {
                 const files = event.target.files;
                 const formData = new FormData();
                 formData.append('image', files[0]);
-                try {
+                alert(JSON.stringify(files[0])
+		try {
 		  const response = await axios.post('/api/host/image', formData);
                   setPicture(response.data.imageUrl);
                 } catch (error) {
