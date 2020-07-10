@@ -15,7 +15,7 @@ const bodyParser = require('body-parser');
 const fileupload = require('express-fileupload');
 const sanitizeHtml = require('sanitize-html');
 
-const passport = require('passport');
+/*const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const User = require('./models/user');
@@ -70,7 +70,7 @@ passport.deserializeUser(async (email, done) => {
   const user = await User.findOne({ where: { email } });
   done(null, user);
 });
-
+*/
 (async () => {
   try {
     await nextApp.prepare();
@@ -81,7 +81,7 @@ passport.deserializeUser(async (email, done) => {
       },
     }));
 
-    server.use(
+    /*server.use(
       session({
         secret: process.env.SESSION_SECRET,
         resave: false,
@@ -671,7 +671,7 @@ passport.deserializeUser(async (email, done) => {
           });
       });
     });
-
+*/
     server.all('*', (req, res) => handle(req, res));
     server.listen(port, err => {
       if (err) {
