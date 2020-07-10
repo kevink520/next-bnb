@@ -1,8 +1,8 @@
 const express = require('express');
 const next = require('next');
 const randomstring = require('randomstring');
-//const dotenv = require('dotenv');
-//dotenv.config();
+const dotenv = require('dotenv');
+dotenv.config();
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
