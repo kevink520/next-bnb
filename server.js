@@ -1,5 +1,6 @@
 const express = require('express');
 const next = require('next');
+const randomstring = require('randomstring');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -648,6 +649,27 @@ passport.deserializeUser(async (email, done) => {
       }
 
       const image = req.files.image;
+      const filename = randomstring.generate(7);
+      image.name.replace(/\s/g, '');
+      const path = `${__dirname}/public/img/houses/${filename}`;
+      image.mv(path, error => {
+        if (error) {
+	  console.error(error);
+          res.status(500)
+            .json({
+              status: 'error',
+              message: error,
+            });
+
+          return;
+        }
+	
+        res.status(200)
+          .json({
+            status: 'success',
+            path: `/img/houses/${filename}`,
+          });
+      });
     });
 
     server.all('*', (req, res) => handle(req, res));

@@ -1,4 +1,4 @@
-const user = 'kevink520';//'u0_a159';
+const user = 'u0_a198';//'kevink520';
 const password = '';
 const host = 'localhost';
 const database = 'nextbnb';
