@@ -76,17 +76,18 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
+    server.use(bodyParser.json());
     server.use(imageUpload.single('image'));
     server.use((req, res, next) => {
       console.log('req in middleware', req)
       next();
     });
 
-    server.use(bodyParser.json({
+    server.use(bodyParser.json(/*{
       verify: (req, res, buf) => {
         req.rawBody = buf;
       },
-    }));
+    }*/));
 
     server.use(
       session({
