@@ -76,7 +76,7 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
-    server.use(uploadImage.single('image'));
+    server.use(imageUpload.single('image'));
     server.use((req, res, next) => {
       console.log('req in middleware', req)
       next();
