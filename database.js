@@ -6,8 +6,8 @@ const database = process.env.DATABASE;
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
-  process.env.DATABASE_URL,
-  {
+  process.env.DATABASE_URL
+  /*{
     host,
     dialect: 'postgres',
     dialectOptions: {
@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
       },
     },
     logging: false,
-  }
+  }*/
 );
 
 module.exports = sequelize;
