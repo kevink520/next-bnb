@@ -1,8 +1,8 @@
 const express = require('express');
 const next = require('next');
 const randomstring = require('randomstring');
-const dotenv = require('dotenv');
-dotenv.config();
+//const dotenv = require('dotenv');
+//dotenv.config();
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -26,17 +26,17 @@ const Booking = require('./models/booking');
 const { Op } = require('sequelize');
 const sequelize = require('./database');
 
-const sessionStore = new SequelizeStore({
+/*const sessionStore = new SequelizeStore({
   db: sequelize,
-});
+});*/
 
 User.sync({ alter: true });
 House.sync({ alter: true });
 Review.sync({ alter: true });
 Booking.sync({ alter: true });
-sessionStore.sync({ alter: true });
+//sessionStore.sync({ alter: true });
 
-passport.use(
+/*passport.use(
   new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
@@ -69,7 +69,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (email, done) => {
   const user = await User.findOne({ where: { email } });
   done(null, user);
-});
+});*/
 
 (async () => {
   try {
@@ -81,7 +81,7 @@ passport.deserializeUser(async (email, done) => {
       },
     }));
 
-    server.use(
+    /*server.use(
       session({
         secret: process.env.SESSION_SECRET,
         resave: false,
@@ -96,7 +96,7 @@ passport.deserializeUser(async (email, done) => {
       passport.initialize(),
       passport.session(),
       fileupload()
-    );
+    );*/
   
     server.post('/api/auth/register', async (req, res) => {
       const { email, password, passwordconfirmation } = req.body;
