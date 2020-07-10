@@ -245,6 +245,41 @@ const HouseForm = props => {
           box-sizing: border-box;
           margin-bottom: 10px;
         }
+
+	select {
+          max-width: 100%;
+          box-sizing: border-box;
+	  margin: 0;
+          box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+          -moz-appearance: none;
+	  -webkit-appearance: none;
+	  appearance: none;
+          background-color: #fff;
+          background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAABQCAYAAAC0wU3eAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAihJREFUeJzt1bFrE1EcwPHv7y6FQpwUxAyd1U03B2kt8dpJHSTdROziIILW/8JiCs5FQYVizihCQWwlFRz8F3RWEBdxEB007zloQ+7say6X9xKQ33e7u/dy78O9y4GmaZqmaZqmaZqmaZqmaZqmjZa4Ltw5+3QOY2szh7rpUrrUHeeiXK0lz04Ya04emJ56fHXz/Pf89WjPSfV0WbCvJWLjw5f4fqvRisMvdf+aSbpgrXkrcO/bj58vVpMH1fyYfzBr9XTZiKzvHotwadKgZpIuYKPnwPTfNc1GtrqZB0XZSU/OGZF1QTLbb5KgPKS3JjgTmepG/7kMxhpO5SG9yRMAuSC9NWFP9x9nMLGdumvhvevHxwkaBMFiROy1/lMZzI3Ohc8SMz9pUBGIjczlm68amW2255ZqLrZrtsuOwFHXDa3l4czB7hXff9tFIbe2G4/yl5zfmUmARoHAPhgYL2hUCDg+mrutvLz4SWLmsbxzjfHxDvmAwIAn07vZYrvGLzoIx1xjyj4hXxAoiIEwIJ8QGAIDfkG+ITAkBvyAQkCgBAbg9lzrSKUS75QBhYJASQyUA4WEwAgYGA708avUQ0JgRAwUBm2JMEtACHjAQDGQM08Q8ISBP6C4EnVE5HjhSR4h4BEDQ4I8Q8AzBgqCAkAgAAYGgAJBIBAGHKCAEAiIgRwoMAQCYwBWk/bh2HIdMW9Wthtboe+naZqmaZqmaZqmaZqmadp/3G8I8Zhwt9JbhAAAAABJRU5ErkJggg==');
+          background-repeat: no-repeat, repeat;
+          background-position: right .7em top 50%, 0 0;
+          background-size: .65em auto, 100%;
+	}
+
+        select::-ms-expand {
+          display: none;
+        }
+
+        select:hover {
+          border-color: #888;
+        }
+
+        select:focus {
+          border-color: #aaa;
+          box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+          box-shadow: 0 0 0 3px -moz-mac-focusring;
+          color: #222;
+          outline: none;
+        }
+
+        select option {
+          font-weight: normal;
+        }
       `}</style>
       <style jsx global>{`
         .pell-container {

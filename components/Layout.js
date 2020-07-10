@@ -36,10 +36,10 @@ const Layout = ({ children }) => {
         button {
           background-color: rgb(255, 90, 95);
           color: white;
-          font-size: 13px;
+          font-size: 20px;
           width: 100%;
+	  padding: 20px;
           border: none;
-          height: 40px;
           border-radius: 4px;
           cursor: pointer;
         }
