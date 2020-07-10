@@ -8,7 +8,7 @@ const Index = ({ houses }) => {
       <div>
         <h2>Places to stay</h2>
         <div className="houses">
-          {houses.map((house, index) => (
+          {(houses || []).map((house, index) => (
             <House key={index} {...house} />
           ))}
         </div>
@@ -27,8 +27,8 @@ const Index = ({ houses }) => {
 
 Index.getInitialProps = async () => {
   try {
-    const res = await fetch('http://localhost:3000/api/houses');
-    const houses = await res.json();
+    //const res = await fetch('http://localhost:3000/api/houses');
+    const houses = [];//await res.json();
     return { houses };
   } catch(error) {
     console.log(error);
