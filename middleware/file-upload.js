@@ -1,7 +1,8 @@
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { v1: uuid } = require('uuid');
+//const { v1: uuid } = require('uuid');
+const randomstring = require('randomstring');
 const s3 = new aws.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -21,7 +22,7 @@ const s3ImageOptions = {
   contentType: multerS3.AUTO_CONTENT_TYPE,
   key: (req, file, cb) => {
     const ext = MIME_TYPE_MAP[file.mimetype];
-    cb(null, `${uuid()}.${ext}`);
+    cb(null, `${randomstring.generate(7)}.${ext}`);
   },
 };
 
