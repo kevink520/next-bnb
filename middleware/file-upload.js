@@ -32,7 +32,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const imageUpload = multer({
-  limits: 500000,
+  limits: 10000000,
   storage: multerS3(s3ImageOptions),
   fileFilter,
 });
