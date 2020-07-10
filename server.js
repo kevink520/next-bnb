@@ -76,11 +76,11 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
-    server.use(bodyParser.json(/*{
+    server.use(bodyParser.json({
       verify: (req, res, buf) => {
         req.rawBody = buf;
       },
-    }*/));
+    }));
 
     server.use(
       session({
@@ -638,7 +638,7 @@ passport.deserializeUser(async (email, done) => {
       }
     });
 
-    server.post('/api/host/image', imageUpload.single('image'),  async (req, res) => {
+    server.post('/api/host/image',  async (req, res) => {
       if (!req.session.passport) {
         res.status(403)
           .json({
