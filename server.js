@@ -96,7 +96,7 @@ passport.deserializeUser(async (email, done) => {
       }),
       passport.initialize(),
       passport.session(),
-      //imageUpload.single('image')
+      imageUpload.single('image')
     );
   
     server.post('/api/auth/register', async (req, res) => {
