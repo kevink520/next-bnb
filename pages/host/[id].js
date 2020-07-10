@@ -4,7 +4,7 @@ import Layout from '../../components/Layout';
 import Head from 'next/head';
 import HouseForm from '../../components/HouseForm';
 
-const EditHouse = ({ house, req }) => (
+const EditHouse = ({ house }) => (
   <Layout>
     <>
       <Head>
@@ -12,7 +12,6 @@ const EditHouse = ({ house, req }) => (
       </Head>
       <HouseForm
         house={house}
-        req={req}
 	edit
       />
     </>
@@ -24,10 +23,7 @@ EditHouse.getInitialProps = async ({ req, query }) => {
     const { origin } = absoluteUrl(req, 'localhost:3000');
     const { id } = query;
     const response = await axios.get(`${origin}/api/houses/${id}`);
-    return {
-      house: response.data,
-      req,
-    };
+    return { house: response.data };
   } catch (error) {
     console.log(error);
   }

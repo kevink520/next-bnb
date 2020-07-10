@@ -12,7 +12,8 @@ const handle = nextApp.getRequestHandler();
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const bodyParser = require('body-parser');
-const fileupload = require('express-fileupload');
+//const fileupload = require('express-fileupload');
+const { imageUpload } = require('./middleware/file-upload');
 const sanitizeHtml = require('sanitize-html');
 
 const passport = require('passport');
@@ -75,11 +76,11 @@ passport.deserializeUser(async (email, done) => {
   try {
     await nextApp.prepare();
     const server = express();
-    server.use(bodyParser.json({
+    server.use(bodyParser.json(/*{
       verify: (req, res, buf) => {
         req.rawBody = buf;
       },
-    }));
+    }*/));
 
     server.use(
       session({
@@ -647,28 +648,12 @@ passport.deserializeUser(async (email, done) => {
 
         return;
       }
-
-      const image = req.files.image;
-      const filename = randomstring.generate(7);
-      image.name.replace(/\s/g, '');
-      const path = `${__dirname}/public/img/houses/${filename}`;
-      image.mv(path, error => {
-        if (error) {
-	  console.error(error);
-          res.status(500)
-            .json({
-              status: 'error',
-              message: error,
-            });
-
-          return;
-        }
 	
-        res.status(200)
-          .json({
-            status: 'success',
-            path: `/img/houses/${filename}`,
-          });
+      res.status(200)
+        .json({
+          status: 'success',
+          imageUrl: req.file.location,
+        });
       });
     });
 
