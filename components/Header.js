@@ -85,13 +85,14 @@ const Header = () => {
         }
 
         ul {
+          display: flex;
+          align-items: center;
           margin: 0;
           padding: 0;
         }
 
         li {
           display: block;
-          float: left;
         }
 
         .username {
@@ -122,10 +123,6 @@ const Header = () => {
 
         img {
           float: left;
-        }
-
-        ul {
-          float: right;
         }
       `}</style>
     </div>
