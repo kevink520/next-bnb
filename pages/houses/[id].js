@@ -65,6 +65,7 @@ const House = ({
     type,
     town,
     title,
+    description,
     price,
     reviews,
     reviewsCount,
@@ -90,6 +91,7 @@ const House = ({
             {type} - {town}
           </p>
           <p>{title}</p>
+	  <div>{description}</div>
           {reviewsCount > 0 && (
             <div className='reviews'>
               <h3>{reviewsCount} Review{reviewsCount > 1 ? 's' : ''}</h3>
