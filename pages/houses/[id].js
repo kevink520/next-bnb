@@ -21,7 +21,7 @@ const calcNumberOfNightsBetweenDates = (startDate, endDate) => {
 };
 
 const getBookedDates = async (origin, houseId) => {
-  try {/
+  try {
     const response = await axios.post(`${origin}/api/houses/booked`, { houseId });
     if (response.data.status === 'error') {
       alert(response.data.message);
