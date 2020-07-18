@@ -20,9 +20,9 @@ const calcNumberOfNightsBetweenDates = (startDate, endDate) => {
   return dayCount;
 };
 
-const getBookedDates = async houseId => {
-  try {
-    const response = await axios.post('http://localhost:3000/api/houses/booked', { houseId });
+const getBookedDates = async (origin, houseId) => {
+  try {/
+    const response = await axios.post(`${origin}/api/houses/booked`, { houseId });
     if (response.data.status === 'error') {
       alert(response.data.message);
       return;
@@ -200,7 +200,7 @@ House.getInitialProps = async ({ req, query }) => {
     const { id } = query;
     const res = await fetch(`${origin}/api/houses/${id}`);
     const house = await res.json();
-    const bookedDates = await getBookedDates(id);
+    const bookedDates = await getBookedDates(origin, id);
     return {
       house,
       bookedDates,
