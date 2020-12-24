@@ -23,7 +23,7 @@
     "dotenv": "^8.2.0",
     "easy-peasy": "^3.3.0",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.7-alpha.3",
+    "express-fileupload": "^1.1.9",
     "express-session": "^1.17.1",
     "isomorphic-unfetch": "^3.0.0",
     "multer": "^1.4.2",
